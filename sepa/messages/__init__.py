@@ -1,15 +1,17 @@
 import pkgutil
-import inspect
+import importlib.util
 
 sepa_messages = {}
 
 # Loop over all message groups
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    if '.' in name:
+    if "." in name:
         continue
 
     # Load message group module
-    module = loader.find_spec(name).loader.load_module(name)
+    spec = loader.find_spec(name)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
     # Export messages from message group
     sepa_messages[name] = module.sepa_messages
